@@ -1,0 +1,968 @@
+mysql> use datab6;
+Database changed
+mysql> select * from Employee;
++-------+-----------+----------+--------------+----------+------------+
+| EmpID | FirstName | LastName | DepartmentID | Salary   | HireDate   |
++-------+-----------+----------+--------------+----------+------------+
+|   101 | Alice     | Smith    |            2 | 90000.00 | 2021-05-10 |
+|   102 | Bob       | Johnson  |            1 | 70000.00 | 2019-08-20 |
+|   103 | Charlie   | Williams |            2 | 85000.00 | 2020-01-15 |
+|   104 | Diana     | Brown    |            3 | 92000.00 | 2022-06-01 |
+|   105 | Evan      | Jones    |            4 | 75000.00 | 2021-11-05 |
+|   106 | Fiona     | Garcia   |         NULL | 68000.00 | 2020-09-12 |
+|   107 | George    | Miller   |            5 | 79000.00 | 2023-03-27 |
+|   108 | Hannah    | Davis    |            2 | 88000.00 | 2024-02-10 |
++-------+-----------+----------+--------------+----------+------------+
+8 rows in set (0.07 sec)
+
+mysql> select * from Department;
++--------------+------------+---------------+
+| DepartmentID | DeptName   | Location      |
++--------------+------------+---------------+
+|            1 | HR         | New York      |
+|            2 | IT         | San Francisco |
+|            3 | Finance    | Chicago       |
+|            4 | Marketing  | New York      |
+|            5 | Operations | Los Angeles   |
++--------------+------------+---------------+
+5 rows in set (0.01 sec)
+
+mysql> select * from Project;
++-----------+-------------------+--------------+-----------+
+| ProjectID | ProjectName       | DepartmentID | Budget    |
++-----------+-------------------+--------------+-----------+
+|       201 | Website Redesign  |            2 | 120000.00 |
+|       202 | Recruitment Drive |            1 |  50000.00 |
+|       203 | Financial Audit   |            3 | 150000.00 |
+|       204 | Ad Campaign       |            4 |  95000.00 |
+|       205 | System Migration  |            2 | 300000.00 |
+|       206 | Client Onboarding |            5 |  75000.00 |
++-----------+-------------------+--------------+-----------+
+6 rows in set (0.00 sec)
+
+mysql> select * from WorksOn;
++-------+-----------+-------------+
+| EmpID | ProjectID | HoursWorked |
++-------+-----------+-------------+
+|   101 |       201 |          40 |
+|   101 |       205 |          35 |
+|   102 |       202 |          10 |
+|   103 |       201 |          30 |
+|   103 |       205 |          15 |
+|   104 |       203 |          25 |
+|   105 |       204 |          20 |
+|   107 |       206 |          15 |
+|   108 |       201 |          20 |
+|   108 |       205 |          40 |
++-------+-----------+-------------+
+10 rows in set (0.00 sec)
+
+mysql> select * from Attendance;
++----------+-------+------------+---------+
+| RecordID | EmpID | Date       | Status  |
++----------+-------+------------+---------+
+|        1 |   101 | 2025-08-01 | Present |
+|        2 |   101 | 2025-08-02 | Absent  |
+|        3 |   102 | 2025-08-01 | Present |
+|        4 |   103 | 2025-08-01 | Present |
+|        5 |   104 | 2025-08-01 | Absent  |
+|        6 |   105 | 2025-08-01 | Present |
+|        7 |   106 | 2025-08-01 | Present |
+|        8 |   107 | 2025-08-01 | Absent  |
+|        9 |   108 | 2025-08-01 | Present |
+|       10 |   101 | 2025-08-03 | Present |
+|       11 |   104 | 2025-08-03 | Present |
+|       12 |   107 | 2025-08-03 | Present |
++----------+-------+------------+---------+
+12 rows in set (0.01 sec)
+
+mysql> CREATE TABLE Product (
+    ->     ProductID INT PRIMARY KEY,
+    ->     ProductName VARCHAR(100),
+    ->     Price DECIMAL(10, 2)
+    -> );
+Query OK, 0 rows affected (0.14 sec)
+
+mysql> CREATE TABLE Orders (
+    ->     OrderID INT PRIMARY KEY,
+    ->     ProductID INT,
+    ->     Quantity INT,
+    ->     OrderDate DATE,
+    ->     FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
+    -> );
+Query OK, 0 rows affected (0.09 sec)
+
+mysql> INSERT INTO Product (ProductID, ProductName, Price) VALUES
+    -> (1, 'Laptop', 1000.00),
+    -> (2, 'Mouse', 25.00),
+    -> (3, 'Keyboard', 45.00),
+    -> (4, 'Monitor', 150.00),
+    -> (5, 'Webcam', 75.00);
+Query OK, 5 rows affected (0.04 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Orders (OrderID, ProductID, Quantity, OrderDate) VALUES
+    -> (101, 1, 2, '2025-08-01'),
+    -> (102, 2, 5, '2025-08-02'),
+    -> (103, 3, 3, '2025-08-03'),
+    -> (104, 1, 1, '2025-08-04'),
+    -> (105, 4, 2, '2025-08-04'),
+    -> (106, 5, 4, '2025-08-05');
+Query OK, 6 rows affected (0.01 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> -- final.docx queries
+mysql> select empid, sum(hoursworked) as total_hours from workson group by empid;
++-------+-------------+
+| empid | total_hours |
++-------+-------------+
+|   101 |          75 |
+|   102 |          10 |
+|   103 |          45 |
+|   104 |          25 |
+|   105 |          20 |
+|   107 |          15 |
+|   108 |          60 |
++-------+-------------+
+7 rows in set (0.01 sec)
+
+mysql> select max(salary) as second_highest_salary from employee where salary < (select max(salary) from employee);
++-----------------------+
+| second_highest_salary |
++-----------------------+
+|              90000.00 |
++-----------------------+
+1 row in set (0.01 sec)
+
+mysql> select * from department where location='new york';
++--------------+-----------+----------+
+| DepartmentID | DeptName  | Location |
++--------------+-----------+----------+
+|            1 | HR        | New York |
+|            4 | Marketing | New York |
++--------------+-----------+----------+
+2 rows in set (0.00 sec)
+
+mysql> select departmentid, sum(budget) as total_budget from project group by departmentid;
++--------------+--------------+
+| departmentid | total_budget |
++--------------+--------------+
+|            2 |    420000.00 |
+|            1 |     50000.00 |
+|            3 |    150000.00 |
+|            4 |     95000.00 |
+|            5 |     75000.00 |
++--------------+--------------+
+5 rows in set (0.00 sec)
+
+mysql> select * from employee where salary > (select avg(salary) from employee);
++-------+-----------+----------+--------------+----------+------------+
+| EmpID | FirstName | LastName | DepartmentID | Salary   | HireDate   |
++-------+-----------+----------+--------------+----------+------------+
+|   101 | Alice     | Smith    |            2 | 90000.00 | 2021-05-10 |
+|   103 | Charlie   | Williams |            2 | 85000.00 | 2020-01-15 |
+|   104 | Diana     | Brown    |            3 | 92000.00 | 2022-06-01 |
+|   108 | Hannah    | Davis    |            2 | 88000.00 | 2024-02-10 |
++-------+-----------+----------+--------------+----------+------------+
+4 rows in set (0.00 sec)
+
+mysql> select * from employee where empid not in (select empid from workson);
++-------+-----------+----------+--------------+----------+------------+
+| EmpID | FirstName | LastName | DepartmentID | Salary   | HireDate   |
++-------+-----------+----------+--------------+----------+------------+
+|   106 | Fiona     | Garcia   |         NULL | 68000.00 | 2020-09-12 |
++-------+-----------+----------+--------------+----------+------------+
+1 row in set (0.00 sec)
+
+mysql> select e.*, d.deptname from employee e left join department d on e.departmentid = d.departmentid;
++-------+-----------+----------+--------------+----------+------------+------------+
+| EmpID | FirstName | LastName | DepartmentID | Salary   | HireDate   | deptname   |
++-------+-----------+----------+--------------+----------+------------+------------+
+|   101 | Alice     | Smith    |            2 | 90000.00 | 2021-05-10 | IT         |
+|   102 | Bob       | Johnson  |            1 | 70000.00 | 2019-08-20 | HR         |
+|   103 | Charlie   | Williams |            2 | 85000.00 | 2020-01-15 | IT         |
+|   104 | Diana     | Brown    |            3 | 92000.00 | 2022-06-01 | Finance    |
+|   105 | Evan      | Jones    |            4 | 75000.00 | 2021-11-05 | Marketing  |
+|   106 | Fiona     | Garcia   |         NULL | 68000.00 | 2020-09-12 | NULL       |
+|   107 | George    | Miller   |            5 | 79000.00 | 2023-03-27 | Operations |
+|   108 | Hannah    | Davis    |            2 | 88000.00 | 2024-02-10 | IT         |
++-------+-----------+----------+--------------+----------+------------+------------+
+8 rows in set (0.00 sec)
+
+mysql> select departmentid, count(*) as employee_count from employee group by departmentid;
++--------------+----------------+
+| departmentid | employee_count |
++--------------+----------------+
+|            2 |              3 |
+|            1 |              1 |
+|            3 |              1 |
+|            4 |              1 |
+|         NULL |              1 |
+|            5 |              1 |
++--------------+----------------+
+6 rows in set (0.00 sec)
+
+mysql> select departmentid, avg(salary) as avg_salary from employee group by departmentid having avg(salary) > 70000;
++--------------+--------------+
+| departmentid | avg_salary   |
++--------------+--------------+
+|            2 | 87666.666667 |
+|            3 | 92000.000000 |
+|            4 | 75000.000000 |
+|            5 | 79000.000000 |
++--------------+--------------+
+4 rows in set (0.00 sec)
+
+mysql> select projectid, sum(hoursworked) as total_hours from workson group by projectid having sum(hoursworked) > 100;
+Empty set (0.00 sec)
+
+mysql> select e.firstname, e.lastname, p.projectname from employee e join workson w on e.empid=w.empid join project p on w.projectid=p.projectid;
++-----------+----------+-------------------+
+| firstname | lastname | projectname       |
++-----------+----------+-------------------+
+| Alice     | Smith    | Website Redesign  |
+| Charlie   | Williams | Website Redesign  |
+| Hannah    | Davis    | Website Redesign  |
+| Bob       | Johnson  | Recruitment Drive |
+| Diana     | Brown    | Financial Audit   |
+| Evan      | Jones    | Ad Campaign       |
+| Alice     | Smith    | System Migration  |
+| Charlie   | Williams | System Migration  |
+| Hannah    | Davis    | System Migration  |
+| George    | Miller   | Client Onboarding |
++-----------+----------+-------------------+
+10 rows in set (0.00 sec)
+
+mysql> select e.empid, e.firstname, w.projectid, w.hoursworked from employee e join workson w on e.empid=w.empid order by w.hoursworked desc;
++-------+-----------+-----------+-------------+
+| empid | firstname | projectid | hoursworked |
++-------+-----------+-----------+-------------+
+|   101 | Alice     |       201 |          40 |
+|   108 | Hannah    |       205 |          40 |
+|   101 | Alice     |       205 |          35 |
+|   103 | Charlie   |       201 |          30 |
+|   104 | Diana     |       203 |          25 |
+|   105 | Evan      |       204 |          20 |
+|   108 | Hannah    |       201 |          20 |
+|   103 | Charlie   |       205 |          15 |
+|   107 | George    |       206 |          15 |
+|   102 | Bob       |       202 |          10 |
++-------+-----------+-----------+-------------+
+10 rows in set (0.00 sec)
+
+mysql> select * from employee where hiredate >= date_sub(curdate(), interval 1 year);
+Empty set (0.00 sec)
+
+mysql> select avg(salary) as avg_salary from employee;
++--------------+
+| avg_salary   |
++--------------+
+| 80875.000000 |
++--------------+
+1 row in set (0.00 sec)
+
+mysql> select concat(firstname,' ',lastname) as fullname, hiredate from employee where hiredate > '2020-12-31';
++---------------+------------+
+| fullname      | hiredate   |
++---------------+------------+
+| Alice Smith   | 2021-05-10 |
+| Diana Brown   | 2022-06-01 |
+| Evan Jones    | 2021-11-05 |
+| George Miller | 2023-03-27 |
+| Hannah Davis  | 2024-02-10 |
++---------------+------------+
+5 rows in set (0.00 sec)
+
+mysql> select empid from workson group by empid having count(projectid) > 3;
+Empty set (0.00 sec)
+
+mysql> select empid, (sum(case when status='present' then 1 else 0 end) / count(*)) * 100 as attendance_percentage from attendance where date between '2025-08-01' and '2025-08-31' group by empid;
++-------+-----------------------+
+| empid | attendance_percentage |
++-------+-----------------------+
+|   101 |               66.6667 |
+|   102 |              100.0000 |
+|   103 |              100.0000 |
+|   104 |               50.0000 |
+|   105 |              100.0000 |
+|   106 |              100.0000 |
+|   107 |               50.0000 |
+|   108 |              100.0000 |
++-------+-----------------------+
+8 rows in set (0.00 sec)
+
+mysql> select d.deptname, count(e.empid) as total_employees from department d left join employee e on d.departmentid=e.departmentid group by d.deptname;
++------------+-----------------+
+| deptname   | total_employees |
++------------+-----------------+
+| HR         |               1 |
+| IT         |               3 |
+| Finance    |               1 |
+| Marketing  |               1 |
+| Operations |               1 |
++------------+-----------------+
+5 rows in set (0.00 sec)
+
+mysql> select departmentid from employee group by departmentid order by avg(salary) desc limit 1;
++--------------+
+| departmentid |
++--------------+
+|            3 |
++--------------+
+1 row in set (0.00 sec)
+
+mysql> select max(budget) as highest_budget, min(budget) as lowest_budget from project;
++----------------+---------------+
+| highest_budget | lowest_budget |
++----------------+---------------+
+|      300000.00 |      50000.00 |
++----------------+---------------+
+1 row in set (0.00 sec)
+
+mysql> select * from employee where empid not in (select empid from workson);
++-------+-----------+----------+--------------+----------+------------+
+| EmpID | FirstName | LastName | DepartmentID | Salary   | HireDate   |
++-------+-----------+----------+--------------+----------+------------+
+|   106 | Fiona     | Garcia   |         NULL | 68000.00 | 2020-09-12 |
++-------+-----------+----------+--------------+----------+------------+
+1 row in set (0.00 sec)
+
+mysql> select * from employee where salary > 80000;
++-------+-----------+----------+--------------+----------+------------+
+| EmpID | FirstName | LastName | DepartmentID | Salary   | HireDate   |
++-------+-----------+----------+--------------+----------+------------+
+|   101 | Alice     | Smith    |            2 | 90000.00 | 2021-05-10 |
+|   103 | Charlie   | Williams |            2 | 85000.00 | 2020-01-15 |
+|   104 | Diana     | Brown    |            3 | 92000.00 | 2022-06-01 |
+|   108 | Hannah    | Davis    |            2 | 88000.00 | 2024-02-10 |
++-------+-----------+----------+--------------+----------+------------+
+4 rows in set (0.00 sec)
+
+mysql> select * from project where budget > 1000000;
+Empty set (0.00 sec)
+
+mysql> select empid, count(projectid) as project_count from workson group by empid;
++-------+---------------+
+| empid | project_count |
++-------+---------------+
+|   101 |             2 |
+|   102 |             1 |
+|   103 |             2 |
+|   104 |             1 |
+|   105 |             1 |
+|   107 |             1 |
+|   108 |             2 |
++-------+---------------+
+7 rows in set (0.00 sec)
+
+mysql> select firstname, lastname, salary from employee;
++-----------+----------+----------+
+| firstname | lastname | salary   |
++-----------+----------+----------+
+| Alice     | Smith    | 90000.00 |
+| Bob       | Johnson  | 70000.00 |
+| Charlie   | Williams | 85000.00 |
+| Diana     | Brown    | 92000.00 |
+| Evan      | Jones    | 75000.00 |
+| Fiona     | Garcia   | 68000.00 |
+| George    | Miller   | 79000.00 |
+| Hannah    | Davis    | 88000.00 |
++-----------+----------+----------+
+8 rows in set (0.00 sec)
+
+mysql> select empid from workson group by empid having count(distinct projectid) = (select count(*) from project);
+Empty set (0.02 sec)
+
+mysql> select p.projectname, e.firstname, e.lastname from project p left join workson w on p.projectid=w.projectid left join employee e on w.empid=e.empid;
++-------------------+-----------+----------+
+| projectname       | firstname | lastname |
++-------------------+-----------+----------+
+| Website Redesign  | Alice     | Smith    |
+| Website Redesign  | Charlie   | Williams |
+| Website Redesign  | Hannah    | Davis    |
+| Recruitment Drive | Bob       | Johnson  |
+| Financial Audit   | Diana     | Brown    |
+| Ad Campaign       | Evan      | Jones    |
+| System Migration  | Alice     | Smith    |
+| System Migration  | Charlie   | Williams |
+| System Migration  | Hannah    | Davis    |
+| Client Onboarding | George    | Miller   |
++-------------------+-----------+----------+
+10 rows in set (0.00 sec)
+
+mysql> select empid, count(*) as present_days from attendance where status='present' and month(date)=8 and year(date)=2025 group by empid;
++-------+--------------+
+| empid | present_days |
++-------+--------------+
+|   101 |            2 |
+|   102 |            1 |
+|   103 |            1 |
+|   104 |            1 |
+|   105 |            1 |
+|   106 |            1 |
+|   107 |            1 |
+|   108 |            1 |
++-------+--------------+
+8 rows in set (0.01 sec)
+
+mysql> select empid, sum(hoursworked) as total_hours from workson group by empid order by total_hours desc limit 3;
++-------+-------------+
+| empid | total_hours |
++-------+-------------+
+|   101 |          75 |
+|   108 |          60 |
+|   103 |          45 |
++-------+-------------+
+3 rows in set (0.00 sec)
+
+mysql> select p.projectname, d.deptname from project p join department d on p.departmentid=d.departmentid;
++-------------------+------------+
+| projectname       | deptname   |
++-------------------+------------+
+| Website Redesign  | IT         |
+| Recruitment Drive | HR         |
+| Financial Audit   | Finance    |
+| Ad Campaign       | Marketing  |
+| System Migration  | IT         |
+| Client Onboarding | Operations |
++-------------------+------------+
+6 rows in set (0.00 sec)
+
+mysql> select empid, avg(hoursworked) as avg_hours from workson group by empid;
++-------+-----------+
+| empid | avg_hours |
++-------+-----------+
+|   101 |   37.5000 |
+|   102 |   10.0000 |
+|   103 |   22.5000 |
+|   104 |   25.0000 |
+|   105 |   20.0000 |
+|   107 |   15.0000 |
+|   108 |   30.0000 |
++-------+-----------+
+7 rows in set (0.00 sec)
+
+mysql> select departmentid from project group by departmentid having max(budget) <= 500000;
++--------------+
+| departmentid |
++--------------+
+|            2 |
+|            1 |
+|            3 |
+|            4 |
+|            5 |
++--------------+
+5 rows in set (0.00 sec)
+
+mysql> select departmentid, sum(salary) as total_salary from employee group by departmentid;
++--------------+--------------+
+| departmentid | total_salary |
++--------------+--------------+
+|            2 |    263000.00 |
+|            1 |     70000.00 |
+|            3 |     92000.00 |
+|            4 |     75000.00 |
+|         NULL |     68000.00 |
+|            5 |     79000.00 |
++--------------+--------------+
+6 rows in set (0.00 sec)
+
+mysql> select * from employee where firstname like 'a%';
++-------+-----------+----------+--------------+----------+------------+
+| EmpID | FirstName | LastName | DepartmentID | Salary   | HireDate   |
++-------+-----------+----------+--------------+----------+------------+
+|   101 | Alice     | Smith    |            2 | 90000.00 | 2021-05-10 |
++-------+-----------+----------+--------------+----------+------------+
+1 row in set (0.00 sec)
+
+mysql> select p.* from project p join department d on p.departmentid=d.departmentid where d.deptname='it';
++-----------+------------------+--------------+-----------+
+| ProjectID | ProjectName      | DepartmentID | Budget    |
++-----------+------------------+--------------+-----------+
+|       201 | Website Redesign |            2 | 120000.00 |
+|       205 | System Migration |            2 | 300000.00 |
++-----------+------------------+--------------+-----------+
+2 rows in set (0.00 sec)
+
+mysql> select empid, min(date) as first_day from attendance group by empid;
++-------+------------+
+| empid | first_day  |
++-------+------------+
+|   101 | 2025-08-01 |
+|   102 | 2025-08-01 |
+|   103 | 2025-08-01 |
+|   104 | 2025-08-01 |
+|   105 | 2025-08-01 |
+|   106 | 2025-08-01 |
+|   107 | 2025-08-01 |
+|   108 | 2025-08-01 |
++-------+------------+
+8 rows in set (0.00 sec)
+
+mysql> select * from department where departmentid not in (select departmentid from employee where departmentid is not null);
+Empty set (0.00 sec)
+
+mysql> select empid from attendance where status='absent' and date >= date_sub(curdate(), interval 30 day) group by empid having count(*) > 5;
+Empty set (0.00 sec)
+
+mysql> select e.empid, e.firstname, coalesce(sum(w.hoursworked),0) as total_hours from employee e left join workson w on e.empid=w.empid group by e.empid order by total_hours desc;
++-------+-----------+-------------+
+| empid | firstname | total_hours |
++-------+-----------+-------------+
+|   101 | Alice     |          75 |
+|   108 | Hannah    |          60 |
+|   103 | Charlie   |          45 |
+|   104 | Diana     |          25 |
+|   105 | Evan      |          20 |
+|   107 | George    |          15 |
+|   102 | Bob       |          10 |
+|   106 | Fiona     |           0 |
++-------+-----------+-------------+
+8 rows in set (0.00 sec)
+
+mysql> select e.firstname, e.lastname, p.projectname, w.hoursworked from employee e join workson w on e.empid=w.empid join project p on w.projectid=p.projectid;
++-----------+----------+-------------------+-------------+
+| firstname | lastname | projectname       | hoursworked |
++-----------+----------+-------------------+-------------+
+| Alice     | Smith    | Website Redesign  |          40 |
+| Charlie   | Williams | Website Redesign  |          30 |
+| Hannah    | Davis    | Website Redesign  |          20 |
+| Bob       | Johnson  | Recruitment Drive |          10 |
+| Diana     | Brown    | Financial Audit   |          25 |
+| Evan      | Jones    | Ad Campaign       |          20 |
+| Alice     | Smith    | System Migration  |          35 |
+| Charlie   | Williams | System Migration  |          15 |
+| Hannah    | Davis    | System Migration  |          40 |
+| George    | Miller   | Client Onboarding |          15 |
++-----------+----------+-------------------+-------------+
+10 rows in set (0.00 sec)
+
+mysql>
+mysql> -- joins (1).docx queries
+mysql> select o.orderid, p.productname, p.price from orders o join product p on o.productid=p.productid;
++---------+-------------+---------+
+| orderid | productname | price   |
++---------+-------------+---------+
+|     101 | Laptop      | 1000.00 |
+|     104 | Laptop      | 1000.00 |
+|     102 | Mouse       |   25.00 |
+|     103 | Keyboard    |   45.00 |
+|     105 | Monitor     |  150.00 |
+|     106 | Webcam      |   75.00 |
++---------+-------------+---------+
+6 rows in set (0.00 sec)
+
+mysql> select o.orderid, p.productname, o.quantity, (o.quantity*p.price) as total_cost from orders o join product p on o.productid=p.productid;
++---------+-------------+----------+------------+
+| orderid | productname | quantity | total_cost |
++---------+-------------+----------+------------+
+|     101 | Laptop      |        2 |    2000.00 |
+|     104 | Laptop      |        1 |    1000.00 |
+|     102 | Mouse       |        5 |     125.00 |
+|     103 | Keyboard    |        3 |     135.00 |
+|     105 | Monitor     |        2 |     300.00 |
+|     106 | Webcam      |        4 |     300.00 |
++---------+-------------+----------+------------+
+6 rows in set (0.00 sec)
+
+mysql> select o.orderid, p.productname, p.price, o.quantity, o.orderdate from orders o join product p on o.productid=p.productid where o.orderdate >= '2025-08-03';
++---------+-------------+---------+----------+------------+
+| orderid | productname | price   | quantity | orderdate  |
++---------+-------------+---------+----------+------------+
+|     103 | Keyboard    |   45.00 |        3 | 2025-08-03 |
+|     104 | Laptop      | 1000.00 |        1 | 2025-08-04 |
+|     105 | Monitor     |  150.00 |        2 | 2025-08-04 |
+|     106 | Webcam      |   75.00 |        4 | 2025-08-05 |
++---------+-------------+---------+----------+------------+
+4 rows in set (0.00 sec)
+
+mysql> select o.orderid, p.productname, o.quantity from orders o join product p on o.productid=p.productid where o.quantity > 3;
++---------+-------------+----------+
+| orderid | productname | quantity |
++---------+-------------+----------+
+|     102 | Mouse       |        5 |
+|     106 | Webcam      |        4 |
++---------+-------------+----------+
+2 rows in set (0.00 sec)
+
+mysql> select p.productname, o.orderdate, p.price from orders o join product p on o.productid=p.productid;
++-------------+------------+---------+
+| productname | orderdate  | price   |
++-------------+------------+---------+
+| Laptop      | 2025-08-01 | 1000.00 |
+| Laptop      | 2025-08-04 | 1000.00 |
+| Mouse       | 2025-08-02 |   25.00 |
+| Keyboard    | 2025-08-03 |   45.00 |
+| Monitor     | 2025-08-04 |  150.00 |
+| Webcam      | 2025-08-05 |   75.00 |
++-------------+------------+---------+
+6 rows in set (0.00 sec)
+
+mysql> select p.productid, p.productname, sum(o.quantity) as total_quantity from product p join orders o on p.productid=o.productid group by p.productid, p.productname;
++-----------+-------------+----------------+
+| productid | productname | total_quantity |
++-----------+-------------+----------------+
+|         1 | Laptop      |              3 |
+|         2 | Mouse       |              5 |
+|         3 | Keyboard    |              3 |
+|         4 | Monitor     |              2 |
+|         5 | Webcam      |              4 |
++-----------+-------------+----------------+
+5 rows in set (0.00 sec)
+
+mysql> select p.productid, p.productname, sum(o.quantity*p.price) as total_revenue from product p join orders o on p.productid=o.productid group by p.productid, p.productname;
++-----------+-------------+---------------+
+| productid | productname | total_revenue |
++-----------+-------------+---------------+
+|         1 | Laptop      |       3000.00 |
+|         2 | Mouse       |        125.00 |
+|         3 | Keyboard    |        135.00 |
+|         4 | Monitor     |        300.00 |
+|         5 | Webcam      |        300.00 |
++-----------+-------------+---------------+
+5 rows in set (0.00 sec)
+
+mysql> select p.productid, p.productname, count(o.orderid) as order_count from product p join orders o on p.productid=o.productid group by p.productid, p.productname;
++-----------+-------------+-------------+
+| productid | productname | order_count |
++-----------+-------------+-------------+
+|         1 | Laptop      |           2 |
+|         2 | Mouse       |           1 |
+|         3 | Keyboard    |           1 |
+|         4 | Monitor     |           1 |
+|         5 | Webcam      |           1 |
++-----------+-------------+-------------+
+5 rows in set (0.00 sec)
+
+mysql> select p.productid, p.productname, avg(o.quantity) as avg_quantity from product p join orders o on p.productid=o.productid group by p.productid, p.productname;
++-----------+-------------+--------------+
+| productid | productname | avg_quantity |
++-----------+-------------+--------------+
+|         1 | Laptop      |       1.5000 |
+|         2 | Mouse       |       5.0000 |
+|         3 | Keyboard    |       3.0000 |
+|         4 | Monitor     |       2.0000 |
+|         5 | Webcam      |       4.0000 |
++-----------+-------------+--------------+
+5 rows in set (0.00 sec)
+
+mysql> select p.productid, p.productname, sum(o.quantity*p.price) as revenue from product p join orders o on p.productid=o.productid group by p.productid, p.productname order by revenue desc limit 1;
++-----------+-------------+---------+
+| productid | productname | revenue |
++-----------+-------------+---------+
+|         1 | Laptop      | 3000.00 |
++-----------+-------------+---------+
+1 row in set (0.01 sec)
+
+mysql> select p.productid, p.productname, o.orderid from product p left join orders o on p.productid=o.productid;
++-----------+-------------+---------+
+| productid | productname | orderid |
++-----------+-------------+---------+
+|         1 | Laptop      |     101 |
+|         1 | Laptop      |     104 |
+|         2 | Mouse       |     102 |
+|         3 | Keyboard    |     103 |
+|         4 | Monitor     |     105 |
+|         5 | Webcam      |     106 |
++-----------+-------------+---------+
+6 rows in set (0.00 sec)
+
+mysql> select p.productid, p.productname, coalesce(sum(o.quantity),0) as total_quantity from product p left join orders o on p.productid=o.productid group by p.productid, p.productname;
++-----------+-------------+----------------+
+| productid | productname | total_quantity |
++-----------+-------------+----------------+
+|         1 | Laptop      |              3 |
+|         2 | Mouse       |              5 |
+|         3 | Keyboard    |              3 |
+|         4 | Monitor     |              2 |
+|         5 | Webcam      |              4 |
++-----------+-------------+----------------+
+5 rows in set (0.00 sec)
+
+mysql> select p.* from product p left join orders o on p.productid=o.productid where o.productid is null;
+Empty set (0.00 sec)
+
+mysql> select p.productname, count(o.orderid) as order_count, coalesce(sum(o.quantity*p.price),0) as revenue from product p left join orders o on p.productid=o.productid group by p.productname;
++-------------+-------------+---------+
+| productname | order_count | revenue |
++-------------+-------------+---------+
+| Laptop      |           2 | 3000.00 |
+| Mouse       |           1 |  125.00 |
+| Keyboard    |           1 |  135.00 |
+| Monitor     |           1 |  300.00 |
+| Webcam      |           1 |  300.00 |
++-------------+-------------+---------+
+5 rows in set (0.00 sec)
+
+mysql> select p.productname, max(o.orderdate) as recent_order_date from product p left join orders o on p.productid=o.productid group by p.productname;
++-------------+-------------------+
+| productname | recent_order_date |
++-------------+-------------------+
+| Laptop      | 2025-08-04        |
+| Mouse       | 2025-08-02        |
+| Keyboard    | 2025-08-03        |
+| Monitor     | 2025-08-04        |
+| Webcam      | 2025-08-05        |
++-------------+-------------------+
+5 rows in set (0.00 sec)
+
+mysql> select o.orderid, p.productname from orders o join product p on o.productid=p.productid where p.price > 100;
++---------+-------------+
+| orderid | productname |
++---------+-------------+
+|     101 | Laptop      |
+|     104 | Laptop      |
+|     105 | Monitor     |
++---------+-------------+
+3 rows in set (0.00 sec)
+
+mysql> select o.orderid, p.productname, (o.quantity*p.price) as total_cost from orders o join product p on o.productid=p.productid having total_cost > 300;
++---------+-------------+------------+
+| orderid | productname | total_cost |
++---------+-------------+------------+
+|     101 | Laptop      |    2000.00 |
+|     104 | Laptop      |    1000.00 |
++---------+-------------+------------+
+2 rows in set (0.00 sec)
+
+mysql> select p.productname, o.orderid from product p join orders o on p.productid=o.productid where o.orderdate='2025-08-04';
++-------------+---------+
+| productname | orderid |
++-------------+---------+
+| Laptop      |     104 |
+| Monitor     |     105 |
++-------------+---------+
+2 rows in set (0.00 sec)
+
+mysql> select p.productid, p.productname from product p join orders o on p.productid=o.productid group by p.productid, p.productname having count(o.orderid) > 1;
++-----------+-------------+
+| productid | productname |
++-----------+-------------+
+|         1 | Laptop      |
++-----------+-------------+
+1 row in set (0.00 sec)
+
+mysql> select p.productid, p.productname from product p left join orders o on p.productid=o.productid group by p.productid, p.productname having count(o.orderid) < 2;
++-----------+-------------+
+| productid | productname |
++-----------+-------------+
+|         2 | Mouse       |
+|         3 | Keyboard    |
+|         4 | Monitor     |
+|         5 | Webcam      |
++-----------+-------------+
+4 rows in set (0.00 sec)
+
+mysql> select o.orderid, p.productname, p.price from orders o join product p on o.productid=p.productid;
++---------+-------------+---------+
+| orderid | productname | price   |
++---------+-------------+---------+
+|     101 | Laptop      | 1000.00 |
+|     104 | Laptop      | 1000.00 |
+|     102 | Mouse       |   25.00 |
+|     103 | Keyboard    |   45.00 |
+|     105 | Monitor     |  150.00 |
+|     106 | Webcam      |   75.00 |
++---------+-------------+---------+
+6 rows in set (0.02 sec)
+
+mysql> select o.orderid, p.productname, o.quantity, (o.quantity*p.price) as total_cost from orders o join product p on o.productid=p.productid;
++---------+-------------+----------+------------+
+| orderid | productname | quantity | total_cost |
++---------+-------------+----------+------------+
+|     101 | Laptop      |        2 |    2000.00 |
+|     104 | Laptop      |        1 |    1000.00 |
+|     102 | Mouse       |        5 |     125.00 |
+|     103 | Keyboard    |        3 |     135.00 |
+|     105 | Monitor     |        2 |     300.00 |
+|     106 | Webcam      |        4 |     300.00 |
++---------+-------------+----------+------------+
+6 rows in set (0.00 sec)
+
+mysql> select o.orderid, p.productname, p.price, o.quantity, o.orderdate from orders o join product p on o.productid=p.productid where o.orderdate >= '2025-08-03';
++---------+-------------+---------+----------+------------+
+| orderid | productname | price   | quantity | orderdate  |
++---------+-------------+---------+----------+------------+
+|     103 | Keyboard    |   45.00 |        3 | 2025-08-03 |
+|     104 | Laptop      | 1000.00 |        1 | 2025-08-04 |
+|     105 | Monitor     |  150.00 |        2 | 2025-08-04 |
+|     106 | Webcam      |   75.00 |        4 | 2025-08-05 |
++---------+-------------+---------+----------+------------+
+4 rows in set (0.00 sec)
+
+mysql> select o.orderid, p.productname, o.quantity from orders o join product p on o.productid=p.productid where o.quantity > 3;
++---------+-------------+----------+
+| orderid | productname | quantity |
++---------+-------------+----------+
+|     102 | Mouse       |        5 |
+|     106 | Webcam      |        4 |
++---------+-------------+----------+
+2 rows in set (0.00 sec)
+
+mysql> select p.productname, o.orderdate, p.price from orders o join product p on o.productid=p.productid;
++-------------+------------+---------+
+| productname | orderdate  | price   |
++-------------+------------+---------+
+| Laptop      | 2025-08-01 | 1000.00 |
+| Laptop      | 2025-08-04 | 1000.00 |
+| Mouse       | 2025-08-02 |   25.00 |
+| Keyboard    | 2025-08-03 |   45.00 |
+| Monitor     | 2025-08-04 |  150.00 |
+| Webcam      | 2025-08-05 |   75.00 |
++-------------+------------+---------+
+6 rows in set (0.00 sec)
+
+mysql> select p.productid, p.productname, sum(o.quantity) as total_quantity from product p join orders o on p.productid=o.productid group by p.productid, p.productname;
++-----------+-------------+----------------+
+| productid | productname | total_quantity |
++-----------+-------------+----------------+
+|         1 | Laptop      |              3 |
+|         2 | Mouse       |              5 |
+|         3 | Keyboard    |              3 |
+|         4 | Monitor     |              2 |
+|         5 | Webcam      |              4 |
++-----------+-------------+----------------+
+5 rows in set (0.00 sec)
+
+mysql> select p.productid, p.productname, sum(o.quantity*p.price) as total_revenue from product p join orders o on p.productid=o.productid group by p.productid, p.productname;
++-----------+-------------+---------------+
+| productid | productname | total_revenue |
++-----------+-------------+---------------+
+|         1 | Laptop      |       3000.00 |
+|         2 | Mouse       |        125.00 |
+|         3 | Keyboard    |        135.00 |
+|         4 | Monitor     |        300.00 |
+|         5 | Webcam      |        300.00 |
++-----------+-------------+---------------+
+5 rows in set (0.00 sec)
+
+mysql> select p.productid, p.productname, count(o.orderid) as order_count from product p join orders o on p.productid=o.productid group by p.productid, p.productname;
++-----------+-------------+-------------+
+| productid | productname | order_count |
++-----------+-------------+-------------+
+|         1 | Laptop      |           2 |
+|         2 | Mouse       |           1 |
+|         3 | Keyboard    |           1 |
+|         4 | Monitor     |           1 |
+|         5 | Webcam      |           1 |
++-----------+-------------+-------------+
+5 rows in set (0.00 sec)
+
+mysql> select p.productid, p.productname, avg(o.quantity) as avg_quantity from product p join orders o on p.productid=o.productid group by p.productid, p.productname;
++-----------+-------------+--------------+
+| productid | productname | avg_quantity |
++-----------+-------------+--------------+
+|         1 | Laptop      |       1.5000 |
+|         2 | Mouse       |       5.0000 |
+|         3 | Keyboard    |       3.0000 |
+|         4 | Monitor     |       2.0000 |
+|         5 | Webcam      |       4.0000 |
++-----------+-------------+--------------+
+5 rows in set (0.00 sec)
+
+mysql> select p.productid, p.productname, sum(o.quantity*p.price) as revenue from product p join orders o on p.productid=o.productid group by p.productid, p.productname order by revenue desc limit 1;
++-----------+-------------+---------+
+| productid | productname | revenue |
++-----------+-------------+---------+
+|         1 | Laptop      | 3000.00 |
++-----------+-------------+---------+
+1 row in set (0.00 sec)
+
+mysql> select p.productid, p.productname, o.orderid from product p left join orders o on p.productid=o.productid;
++-----------+-------------+---------+
+| productid | productname | orderid |
++-----------+-------------+---------+
+|         1 | Laptop      |     101 |
+|         1 | Laptop      |     104 |
+|         2 | Mouse       |     102 |
+|         3 | Keyboard    |     103 |
+|         4 | Monitor     |     105 |
+|         5 | Webcam      |     106 |
++-----------+-------------+---------+
+6 rows in set (0.00 sec)
+
+mysql> select p.productid, p.productname, coalesce(sum(o.quantity),0) as total_quantity from product p left join orders o on p.productid=o.productid group by p.productid, p.productname;
++-----------+-------------+----------------+
+| productid | productname | total_quantity |
++-----------+-------------+----------------+
+|         1 | Laptop      |              3 |
+|         2 | Mouse       |              5 |
+|         3 | Keyboard    |              3 |
+|         4 | Monitor     |              2 |
+|         5 | Webcam      |              4 |
++-----------+-------------+----------------+
+5 rows in set (0.00 sec)
+
+mysql> select p.* from product p left join orders o on p.productid=o.productid where o.productid is null;
+Empty set (0.00 sec)
+
+mysql> select p.productname, count(o.orderid) as order_count, coalesce(sum(o.quantity*p.price),0) as revenue from product p left join orders o on p.productid=o.productid group by p.productname;
++-------------+-------------+---------+
+| productname | order_count | revenue |
++-------------+-------------+---------+
+| Laptop      |           2 | 3000.00 |
+| Mouse       |           1 |  125.00 |
+| Keyboard    |           1 |  135.00 |
+| Monitor     |           1 |  300.00 |
+| Webcam      |           1 |  300.00 |
++-------------+-------------+---------+
+5 rows in set (0.00 sec)
+
+mysql> select p.productname, max(o.orderdate) as recent_order_date from product p left join orders o on p.productid=o.productid group by p.productname;
++-------------+-------------------+
+| productname | recent_order_date |
++-------------+-------------------+
+| Laptop      | 2025-08-04        |
+| Mouse       | 2025-08-02        |
+| Keyboard    | 2025-08-03        |
+| Monitor     | 2025-08-04        |
+| Webcam      | 2025-08-05        |
++-------------+-------------------+
+5 rows in set (0.00 sec)
+
+mysql> select o.orderid, p.productname from orders o join product p on o.productid=p.productid where p.price > 100;
++---------+-------------+
+| orderid | productname |
++---------+-------------+
+|     101 | Laptop      |
+|     104 | Laptop      |
+|     105 | Monitor     |
++---------+-------------+
+3 rows in set (0.00 sec)
+
+mysql> select o.orderid, p.productname, (o.quantity*p.price) as total_cost from orders o join product p on o.productid=p.productid having total_cost > 300;
++---------+-------------+------------+
+| orderid | productname | total_cost |
++---------+-------------+------------+
+|     101 | Laptop      |    2000.00 |
+|     104 | Laptop      |    1000.00 |
++---------+-------------+------------+
+2 rows in set (0.00 sec)
+
+mysql> select p.productname, o.orderid from product p join orders o on p.productid=o.productid where o.orderdate='2025-08-04';
++-------------+---------+
+| productname | orderid |
++-------------+---------+
+| Laptop      |     104 |
+| Monitor     |     105 |
++-------------+---------+
+2 rows in set (0.00 sec)
+
+mysql> select p.productid, p.productname from product p join orders o on p.productid=o.productid group by p.productid, p.productname having count(o.orderid) > 1;
++-----------+-------------+
+| productid | productname |
++-----------+-------------+
+|         1 | Laptop      |
++-----------+-------------+
+1 row in set (0.00 sec)
+
+mysql> select p.productid, p.productname from product p left join orders o on p.productid=o.productid group by p.productid, p.productname having count(o.orderid) < 2;
++-----------+-------------+
+| productid | productname |
++-----------+-------------+
+|         2 | Mouse       |
+|         3 | Keyboard    |
+|         4 | Monitor     |
+|         5 | Webcam      |
++-----------+-------------+
+4 rows in set (0.00 sec)
